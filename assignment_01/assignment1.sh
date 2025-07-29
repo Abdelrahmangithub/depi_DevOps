@@ -19,7 +19,7 @@ find . -name "abduu.txt"
 
 # preview data in abduu file
 echo "No.1" >> abduu.txt
-cat test_file.txt
+cat abduu.txt
 
 # make a new alias
 alias clr='clear'
@@ -28,7 +28,7 @@ m docker
 clr
 
 #nano & history & date
-nano test_file.txt
+nano abduu.txt
 history
 date
 
