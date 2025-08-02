@@ -1,0 +1,6 @@
+go to sudo vi /etc/php/8.3/fpm/pool.d/www.conf
+and find listen 
+make it
+
+listen = 127.0.0.1:9000
+listen.allowed_clients = 127.0.0.1

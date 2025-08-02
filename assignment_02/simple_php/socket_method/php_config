@@ -1,0 +1,7 @@
+go to sudo vi /etc/php/8.3/fpm/pool.d/www.conf
+and find listen 
+make it 
+listen = /run/php/php8.3-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0660
