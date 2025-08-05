@@ -1,0 +1,7 @@
+docker pull {image name and its tag} get it from dockerhub
+docker run -d -P {image} ===> will run it on a random port
+docker ps ===> will print your active containers
+docker save -o nginx.tar {image} ===> will save the image in the file nginx.tar
+docker load -i nginx.tar ===> will load it in your current location
+save and load if you want to move images without internet
+docker exec -it {id of the container} /bin/sh ===> will make you inside the container
