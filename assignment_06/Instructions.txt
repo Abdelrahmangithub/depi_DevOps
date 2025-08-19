@@ -1,0 +1,2 @@
+to build ==> docker compose -f Docker-compose_scale.yml build
+to run   ==> docker compose -f Docker-compose_scale.yml -p pet up --scale app=3 -d
