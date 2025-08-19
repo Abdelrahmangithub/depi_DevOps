@@ -1,0 +1,20 @@
+At first create Network by docker network create (name)
+then create volumes by docker volume create (name)
+
+create 2 networks and 3 volumes 
+
+Then we should create Data Base let's say postgres 
+We should make 3 db by 
+
+docker run -d --name postgres1 --network abduu1 -e POSTGRES_USER=abdu1 -e POSTGRES_PASSWORD=pass1 -e POSTGRES_DB=db1 -v vol1:/var/lib/postgresql/data postgres:15
+docker run -d --name postgres2 --network abduu1 -e POSTGRES_USER=abdu2 -e POSTGRES_PASSWORD=pass2 -e POSTGRES_DB=db2 -v vol1:/var/lib/postgresql/data postgres:15
+docker run -d --name postgres3 --network abduu2 -e POSTGRES_USER=abdu3 -e POSTGRES_PASSWORD=pass3 -e POSTGRES_DB=db3 -v vol2:/var/lib/postgresql/data postgres:15
+
+Then make 3 containers with my previous image for spring pet clinic
+
+ docker run -d --name coont1 --network abduu1 -p 9999:9966 -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres1:5432/db1 -e SPRING_DATASOURCE_USERNAME=abdu1 -e SPRING_DATASOURCE_PASSWORD=PASS1 -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect -e SPRING_JPA_HIBERNATE_DDL_AUTO=update -e SPRING_JPA_PROPERTIES_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE=false petclinic:v1
+ docker run -d --name coont2 --network abduu1 -p 9998:9966 -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres2:5432/db2 -e SPRING_DATASOURCE_USERNAME=abdu2 -e SPRING_DATASOURCE_PASSWORD=PASS2 -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect -e SPRING_JPA_HIBERNATE_DDL_AUTO=update -e SPRING_JPA_PROPERTIES_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE=false petclinic:v1
+ docker run -d --name coont3 --network abduu2 -p 9997:9966 -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres3:5432/db3 -e SPRING_DATASOURCE_USERNAME=abdu3 -e SPRING_DATASOURCE_PASSWORD=PASS3 -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect -e SPRING_JPA_HIBERNATE_DDL_AUTO=update -e SPRING_JPA_PROPERTIES_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE=false petclinic:v1
+
+To check data base users locally 
+docker exec -it postgres1 psql -U abdu1 -d db1 -c "SELECT * FROM owners;"
