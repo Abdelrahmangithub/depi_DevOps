@@ -1,0 +1,117 @@
+---
+- name: Update and Upgrade
+  hosts: all
+  become: yes # Use sudo to run these tasks
+  tasks:
+    - name: Update
+      apt:
+        update_cache: yes
+    - name: Upgrade
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+
+- name: Install Nginx
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present # Install Nginx if not already installed
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    - name: configuration file
+      copy:
+        src: ./nginx.conf
+        dest: /etc/nginx/sites-available/petclinic
+        mode: '0644'
+      notify:
+        - Restart Nginx
+    - name: Enable site
+      file:
+        src: /etc/nginx/sites-available/petclinic
+        dest: /etc/nginx/sites-enabled/petclinic
+        state: link # Create a symbolic link to enable the site
+      notify:
+        - Restart Nginx
+  handlers: # Handlers are triggered by notify
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+- name : Install docker
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install certificates
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+    - name: Add GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+    - name: Install docker
+      apt:
+        name: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+    - name: Ensure docker is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    # To avoid permission denied error while running docker commands
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+- name: Copy petclinic
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copy petclinic
+      synchronize:
+        src: ./spring-petclinic_using_doc-ignore/
+        dest: /home/ubuntu/spring-petclinic/
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.idea"
+          - "--exclude=target"
+    - name: build petclinic
+      shell: |
+        cd /home/ubuntu/spring-petclinic
+        docker build -t petclinic_ansible:v1 .
+      args:
+        executable: /bin/bash
+    - name: Run petclinic container
+      docker_container:
+        name: petclinic
+        image: petclinic_ansible:v1
+        state: started
+        restart_policy: always
+        ports:
+          - "9999:9966"
+  
+
+      
+
