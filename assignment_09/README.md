@@ -56,6 +56,35 @@ Now let's make our hosts.ini:
 [EC2]
 51.21.246.104 ansible_user=ubuntu ansible_ssh_private_key_file=~/Key1.pem
 ```
+To make a passwordless login to your instance 
+first, check wether you have a key or not go to 
+```bash
+ls ~/.ssh
+```
+If not generate a key using:
+```bash
+ssh-keygen -t rsa -b 2048
+```
+else copy your public id and open your instance first using .pem key and inventory then:
+``bash
+mkdir ~/.ssh
+chmod 600 ~/.ssh
+```
+then add your public key to authorized keys:
+```bash
+vi ~/.ssh/authorized_keys
+```
+Then :
+```bash
+chmod 400 ~/.ssh/authorized_keys
+```
+
+Now you can open it using :
+```bash
+ssh ubuntu@<public_IP>
+```
+![Passwordless](image-8.png)
+
 Now let's Make a playbook to Install nginx and run also to run Spring petclinic:
 Below The main Tasks of run_petclinic.yaml
 
