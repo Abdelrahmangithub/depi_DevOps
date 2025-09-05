@@ -1,0 +1,21 @@
+- name: install Docker compose on EC2 instance
+  hosts: EC2
+  become: yes
+  tasks:
+    - name: Copy compose file
+      copy:
+        src: ./Docker-compose.yml
+        dest: /home/ubuntu/spring-petclinic/spring-petclinic_using_doc-ignore/Docker-compose.yml
+    - name: copy env file
+      copy:
+        src: ./.env
+        dest: /home/ubuntu/spring-petclinic/spring-petclinic_using_doc-ignore
+    - name: Build docker compose
+      shell: |
+        cd /home/ubuntu/spring-petclinic/spring-petclinic_using_doc-ignore
+        docker compose -f /home/ubuntu/spring-petclinic/spring-petclinic_using_doc-ignore/Docker-compose.yml build 
+    - name: Run docker compose
+      shell: |
+        cd /home/ubuntu/spring-petclinic
+        docker compose -f /home/ubuntu/spring-petclinic/spring-petclinic_using_doc-ignore/Docker-compose.yml up -d
+      

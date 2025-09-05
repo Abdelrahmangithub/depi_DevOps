@@ -1,0 +1,18 @@
+---
+#to run: ansible-playbook -i inventory playBook.yaml
+- name: Install and run Nginx
+  hosts: ubuntu_nodes
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present #absent for uninstall 
+        update_cache: yes
+
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+

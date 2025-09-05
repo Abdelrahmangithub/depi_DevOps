@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: meine_petclinic_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - vol1:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      - abduu1
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MAVEN_IMAGE: ${MAVEN_IMAGE}
+        JDK_IMAGE: ${JDK_IMAGE}
+    image: meine_petclinic_app
+    container_name: meine_petclinic_app_build
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+        SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+        SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+        SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}
+        SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+        SPRING_JPA_PROPERTIES_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE: ${SPRING_JPA_PROPERTIES_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE}
+
+    ports:
+      - "9990:9966" 
+    depends_on:
+      - db
+    networks:
+      - abduu1
+volumes:
+  vol1:
+    
+networks:
+  abduu1:
+
+
