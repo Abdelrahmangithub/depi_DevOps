@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    ports:
+      - "5434:5432"
+
+  app:
+    ports:
+      - "9990:9966"
+    volumes:
+      - vol1_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9990/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  #sonarqube:
+   # ports:
+    #  - "9000:9000"
+volumes:
+  vol1_dev:

@@ -1,0 +1,14 @@
+services:
+  nexus:
+      image: sonatype/nexus3
+      container_name: meine_nexus_${POSTGRES_STAGE}
+      volumes:
+        - nexus_data:/nexus-data
+      networks:
+        - abduu1
+      ports:
+        - "8081:8081"
+networks:
+  abduu1:
+volumes:
+  nexus_data:
