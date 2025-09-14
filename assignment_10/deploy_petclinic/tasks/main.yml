@@ -1,0 +1,25 @@
+---
+# tasks file for deploy_petclinic
+
+- name: Copy petclinic
+  synchronize:
+    src: ./petclinic_compose/
+    dest: /home/ubuntu/spring-petclinic/
+    rsync_opts:
+      - "--exclude=.git"
+      - "--exclude=.idea"
+      - "--exclude=target"
+
+- name: Build docker images
+  shell: |
+    cd /home/ubuntu/spring-petclinic
+    docker compose -f Docker-compose.yml --env-file .env  build
+
+- name: Run docker compose
+  shell: |
+    cd /home/ubuntu/spring-petclinic
+    docker compose -f Docker-compose.yml --env-file .env up -d
+
+
+
+
